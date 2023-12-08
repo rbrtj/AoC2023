@@ -108,6 +108,7 @@ const solution = (input) => {
 
   let games = input.split("\n");
   const gamesArray = [];
+  const passedGamesNumbers = [];
   for (let i = 0; i < games.length; i++) {
     const game = games[i];
     const indexOfColon = game.indexOf(":");
@@ -117,23 +118,30 @@ const solution = (input) => {
 
   for (let i = 0; i < games.length; i++) {
     const game = games[i];
-    const gameName = "Game " + (i + 1);
+    const gameName = i + 1;
     const gameInitialValues = { red: 0, blue: 0, green: 0 };
-    const gameObj = Object.create({});
-    console.log(gameObj);
-    return;
-    //const gamesArray.push(gameObj);
-    gamesMap["Game " + (i + 1)] = { red: 0, blue: 0, green: 0 };
+    const gameObj = {};
+    gameObj[gameName] = gameInitialValues;
+    gamesArray.push(gameObj);
+    let roundsFailed = [];
     for (let round of game) {
       for (let color of Object.keys(bag)) {
         const roundGems = round.split(", ");
         const colorOfGem = roundGems.filter((gem) => gem.includes(color));
-        if (colorOfGem.length === 0) continue;
+        if (colorOfGem.length === 0) {
+          continue;
+        }
         const gemsCount = parseInt(colorOfGem[0].match(/\d+/)[0]);
-        gamesMap["Game " + (i + 1)][color] += gemsCount;
+        if (gemsCount > bag[color]) {
+          roundsFailed.push(false);
+        }
       }
     }
+    if (roundsFailed.length === 0) {
+      passedGamesNumbers.push(i + 1);
+    }
   }
+  return passedGamesNumbers.reduce((acc, cur) => acc + cur, 0);
 };
 
-solution(input);
+console.log(solution(input));
