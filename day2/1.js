@@ -107,7 +107,6 @@ const solution = (input) => {
   };
 
   let games = input.split("\n");
-  const gamesArray = [];
   const passedGamesNumbers = [];
   for (let i = 0; i < games.length; i++) {
     const game = games[i];
@@ -118,11 +117,6 @@ const solution = (input) => {
 
   for (let i = 0; i < games.length; i++) {
     const game = games[i];
-    const gameName = i + 1;
-    const gameInitialValues = { red: 0, blue: 0, green: 0 };
-    const gameObj = {};
-    gameObj[gameName] = gameInitialValues;
-    gamesArray.push(gameObj);
     let roundsFailed = [];
     for (let round of game) {
       for (let color of Object.keys(bag)) {
