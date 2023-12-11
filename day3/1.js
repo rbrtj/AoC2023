@@ -142,36 +142,64 @@ const input = `....411...............838......721.....44........................
 const solution = (input) => {
   const rows = input.split("\n");
   const map = rows.map((row) => row.split(""));
-  const numbersToAdd = [];
-  const numbersToRevise = [];
-  for (let i = 0; i < map.length; i++) {
-    let j = 0;
-    while (j < map[i].length && map[i][j]) {
-      if (isNaN(map[i][j])) {
-        j++;
-        continue;
+  let sol = 0;
+  // y, x
+  const moves = [
+    [0, -1],
+    [0, 1],
+    [1, 0],
+    [-1, 0],
+    [1, -1],
+    [1, 1],
+    [-1, 1],
+    [-1, -1],
+  ];
+  for (let y = 0; y < map.length; y++) {
+    let isNum = false;
+    let currNum = "";
+    let check = true;
+
+    for (let x = 0; x < map[y].length; x++) {
+      isNum = isNumber(map[y][x]);
+
+      if (!isNum && !check) {
+        sol += parseInt(currNum);
       }
-      const indexOfNextNonNumber = map[i].findIndex(
-        (char, index) => isNaN(char) && index > j,
-      );
-      const number = map[i].slice(j, j + indexOfNextNonNumber).join("");
-      console.log(number);
-      if (
-        map[i][j - 1] !== "." ||
-        (indexOfNextNonNumber !== -1 && map[i][indexOfNextNonNumber] !== ".")
-      ) {
-        numbersToAdd.push(number);
-      } else {
-        numbersToRevise.push({
-          number: number,
-          prevIndex: j - 1,
-          nextIndex: indexOfNextNonNumber,
-        });
+
+      if (!isNum) {
+        currNum = "";
+        check = true;
       }
-      j = indexOfNextNonNumber;
+
+      if (isNum && check) {
+        const isAdjacent = moves.reduce((acc, [yMove, xMove]) => {
+          if (map[y + yMove] === undefined) return acc;
+          const char = map[y + yMove][x + xMove];
+          return acc || isSymbol(char);
+        }, false);
+        if (isAdjacent) {
+          check = false;
+        }
+      }
+
+      if (isNum) {
+        currNum += map[y][x];
+      }
+    }
+    if (isNum && !check) {
+      sol += parseInt(currNum);
     }
   }
-  //  console.log(numbersToRevise);
+  return sol;
 };
 
-solution(input);
+const isNumber = (char) => {
+  return !isNaN(parseInt(char));
+};
+
+const isSymbol = (char) => {
+  if (char === undefined) return undefined;
+  return char !== "." && isNaN(parseInt(char));
+};
+
+console.log(solution(input));
