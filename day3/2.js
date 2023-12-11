@@ -140,7 +140,6 @@ const input = `....411...............838......721.....44........................
 ......114...............81........................767......................720......................260.....................................`;
 
 const data = input.split("\n").map((row) => row.split(""));
-
 // y,x
 const moves = [
   [0, -1],
@@ -165,9 +164,9 @@ const isNumber = (char) => {
 
 const findWholeNumber = (x, y) => {
   let number = "";
-  let indexOfPreviousNonNumber;
+  let indexOfPreviousNonNumber = -1;
   // Map: y : x
-  let coordinates = new Map();
+  let coordinates = [];
   for (let i = x; i >= 0; i--) {
     if (!isNumber(data[y][i])) {
       indexOfPreviousNonNumber = i;
@@ -179,7 +178,7 @@ const findWholeNumber = (x, y) => {
     if (isNumber(data[y][i])) {
       number += data[y][i];
 
-      coordinates.set(y, i);
+      coordinates.push([y, i]);
     } else {
       break;
     }
@@ -188,24 +187,40 @@ const findWholeNumber = (x, y) => {
   return [parseInt(number), coordinates];
 };
 
+let sum = 0;
+
 for (let y = 0; y < data.length; y++) {
-  if (y !== 2) continue;
   let isSym;
   for (let x = 0; x < data[y].length; x++) {
     isSym = isSymbol(data[y][x]);
     if (isSym) {
       const checkedCoordinates = [];
+      let numbersToSum = [];
       for (let k = 0; k < moves.length; k++) {
-        console.log(checkedCoordinates);
         let [moveY, moveX] = moves[k];
         if (data[y + moveY] === undefined) continue;
         if (data[x + moveX][y + moveY] === undefined) continue;
+        let shouldContinue = true;
+        checkedCoordinates.forEach((coordinate) => {
+          if (coordinate[0] === y + moveY && coordinate[1] === x + moveX)
+            shouldContinue = false;
+        });
+        if (!shouldContinue) continue;
         if (checkedCoordinates.includes([y + moveY, x + moveX])) continue;
         if (isNumber(data[y + moveY][x + moveX])) {
           const [number, coordinates] = findWholeNumber(x + moveX, y + moveY);
-          console.log("Number: ", number, "Coordinates: ", coordinates);
+          numbersToSum.push(number);
+          checkedCoordinates.push(...coordinates);
         }
+      }
+
+      console.log(numbersToSum);
+      if (numbersToSum.length > 1) {
+        const sumOfNumbers = numbersToSum[0] * numbersToSum[1];
+        sum += sumOfNumbers;
       }
     }
   }
 }
+//console.log(data[139]);
+console.log(sum);
